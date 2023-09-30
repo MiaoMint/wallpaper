@@ -1,27 +1,3 @@
-<template>
-  <div>
-    <div class="mb-8 text-2xl">Favorites</div>
-    <div class="mb-8">
-      <div class="flex flex-wrap">
-        <Tag
-          v-for="tag in tags"
-          :key="tag"
-          :selected="currentTag === tag"
-          @click="onFilteredImages(tag)"
-          :tag="tag"
-        />
-      </div>
-    </div>
-    <div class="mb-8">
-      <GridList v-if="list.length" :data="list!" />
-      <div v-else class="text-center mt-20 flex flex-col justify-center">
-        <div class="text-2xl">No favorites yet</div>
-        <div class="text-xl">Add some!</div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import GridList from "~/components/Layout/GridList.vue";
 import Waterfall from "~/components/Layout/Waterfall.vue";
@@ -54,3 +30,26 @@ onActivated(() => {
   tags.value = [...new Set(images.flatMap((image) => image.tags))];
 });
 </script>
+<template>
+  <div>
+    <div class="mb-8 text-2xl">Favorites</div>
+    <div class="mb-8">
+      <div class="flex flex-wrap">
+        <Tag
+          v-for="tag in tags"
+          :key="tag"
+          :selected="currentTag === tag"
+          @click="onFilteredImages(tag)"
+          :tag="tag"
+        />
+      </div>
+    </div>
+    <div class="mb-8">
+      <GridList v-if="list.length" :data="list!" />
+      <div v-else class="text-center mt-20 flex flex-col justify-center">
+        <div class="text-2xl">No favorites yet</div>
+        <div class="text-xl">Add some!</div>
+      </div>
+    </div>
+  </div>
+</template>

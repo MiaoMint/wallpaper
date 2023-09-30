@@ -7,10 +7,13 @@ export default defineEventHandler(async (event): Promise<Image[]> => {
     return [];
   }
   const { data } = await request("wallhaven", `/search?page=${page}&q=${kw}`);
-  return data.map((image: any) => ({
-    resolution: image.resolution,
-    source: "wallhaven",
-    img: image.path,
-    id: image.id,
-  }));
+  return data.map(
+    (image: any): Image => ({
+      resolution: image.resolution,
+      source: "wallhaven",
+      sample: image.thumbs.large,
+      id: image.id,
+      purity: image.purity,
+    }),
+  );
 });
