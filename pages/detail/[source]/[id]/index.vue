@@ -1,10 +1,14 @@
 <script setup>
+import { FastAverageColor } from "fast-average-color";
+
 const router = useRoute();
 const { id, source } = router.params;
 const { data, pending, error } = useFetch(`/api/${source}/detail?id=${id}`);
 
 // 当前位置
 let currentPosition = 0;
+
+const backgroundColor = ref("");
 
 const onWindowScrool = () => {
   const sheet = document.getElementById("sheet");
@@ -36,28 +40,63 @@ const onDrag = (e) => {
 
 onActivated(() => {
   window.addEventListener("scroll", onWindowScrool);
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.background = backgroundColor.value;
 });
 
 onDeactivated(() => {
   window.removeEventListener("scroll", onWindowScrool);
+  // 重置背景颜色
+  document.body.style.background = "#fff";
 });
+
+const genBackground = () => {
+  const img = document.getElementById("image");
+  console.log(img);
+  if (!img) {
+    return;
+  }
+  const fac = new FastAverageColor();
+  fac
+    .getColorAsync(img)
+    .then((color) => {
+      backgroundColor.value = `
+      linear-gradient(215deg, ${color.hex}, transparent 40%),
+    radial-gradient(${color.hex}, transparent 40%) no-repeat -60vw -40vh /
+      105vw 200vh,
+    radial-gradient(${color.hex}, transparent 65%) no-repeat 50%
+      calc(100% + 20rem) / 60rem 30rem
+      `;
+      document.body.style.background = backgroundColor.value;
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+};
 </script>
 <template>
-  <div class="bg-slate-300 animate-pulse h-screen" v-if="pending"></div>
+  <div class="h-screen" v-if="pending">
+    <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
+      <div>🤔</div>
+      <div>Loading...</div>
+    </div>
+  </div>
   <div v-else-if="error" class="text-center">
     <h1 class="text-2xl font-bold">Error</h1>
     <p>{{ error }}</p>
   </div>
   <div v-else>
     <div class="flex flex-col items-center">
-      <div class="w-full h-screen">
+      <div class="w-full min-h-screen">
         <LoadImage class="h-full w-full" :src="data.url" alt="image">
           <template #progress="{ progress }">
-            <div
-              class="h-3/4 flex flex-col justify-center items-center text-3xl"
-            >
-              <div>😝</div>
-              <div>{{ Math.floor(progress * 100) }}%</div>
+            <div class="h-screen">
+              <div
+                class="h-3/4 flex flex-col justify-center items-center text-3xl"
+              >
+                <div>🤤</div>
+                <div>{{ Math.floor(progress * 100) }}%</div>
+              </div>
             </div>
           </template>
           <template #error="{ error }">
@@ -66,7 +105,15 @@ onDeactivated(() => {
             </div>
           </template>
           <template #img="{ src, alt }">
-            <img :src="src" :alt="alt" />
+            <a :href="data.url" target="_blank" rel="noopener noreferrer">
+              <img
+                class="shadow-md rounded-lg mb-8"
+                :src="src"
+                :alt="alt"
+                @load="genBackground"
+                id="image"
+              />
+            </a>
           </template>
         </LoadImage>
       </div>
@@ -77,7 +124,7 @@ onDeactivated(() => {
         <div class="bg-white rounded-t-xl shadow-lg border p-5 h-full">
           <div
             class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden cursor-n-resize"
-            @drag="onDrag"
+            @drag.prevet="onDrag"
             draggable="true"
           ></div>
           <div class="h-full overflow-auto">
