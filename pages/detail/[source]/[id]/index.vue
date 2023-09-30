@@ -9,8 +9,10 @@ const { data, pending, error } = useFetch(`/api/${source}/detail?id=${id}`);
 let currentPosition = 0;
 
 const backgroundColor = ref("");
+let isTouchMove = false;
 
 const onWindowScrool = () => {
+  if (isTouchMove) return;
   const sheet = document.getElementById("sheet");
   if (!sheet) return;
   const isScrollDown = window.scrollY > currentPosition;
@@ -20,6 +22,12 @@ const onWindowScrool = () => {
   } else {
     sheet.style.bottom = "0";
   }
+};
+
+const closeSheet = () => {
+  const sheet = document.getElementById("sheet");
+  if (!sheet) return;
+  sheet.style.bottom = "-100%";
 };
 
 const onDrag = (e) => {
@@ -35,6 +43,21 @@ const onDrag = (e) => {
   sheet.style.transition = "none";
   const distance = window.innerHeight - clientY + 25;
   if (distance > 300) return;
+  sheet.style.height = `${distance}px`;
+};
+
+const onTouchmove = (e) => {
+  isTouchMove = true;
+  const sheet = document.getElementById("sheet");
+  if (!sheet) return;
+  const { clientY } = e.touches[0];
+  if (clientY <= 0) {
+    sheet.style.transition = "all 0.3s";
+    return;
+  }
+  sheet.style.transition = "none";
+  const distance = window.innerHeight - clientY + 25;
+  if (distance > 400) return;
   sheet.style.height = `${distance}px`;
 };
 
@@ -88,7 +111,11 @@ const genBackground = () => {
   <div v-else>
     <div class="flex flex-col items-center">
       <div class="w-full min-h-screen">
-        <LoadImage class="h-full w-full" :src="data.url" alt="image">
+        <LoadImage
+          class="h-full w-full flex justify-center"
+          :src="data.url"
+          alt="image"
+        >
           <template #progress="{ progress }">
             <div class="h-screen">
               <div
@@ -122,11 +149,38 @@ const genBackground = () => {
         id="sheet"
       >
         <div class="bg-white rounded-t-xl shadow-lg border p-5 h-full">
-          <div
-            class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden cursor-n-resize"
-            @drag.prevet="onDrag"
-            draggable="true"
-          ></div>
+          <div class="h-4 relative">
+            <div
+              class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden cursor-n-resize"
+              @drag.prevet="onDrag"
+              @touchmove="onTouchmove"
+              @touchend="isTouchMove = false"
+              draggable="true"
+            ></div>
+            <!-- 暂时收起按钮 -->
+            <div class="absolute -top-2 -right-2 h-full flex items-center">
+              <button
+                class="text-gray-400 hover:text-gray-600"
+                @click="closeSheet"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-x"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
           <div class="h-full overflow-auto">
             <h1 class="text-2xl font-bold">Tags</h1>
             <div class="flex flex-wrap mt-3">
