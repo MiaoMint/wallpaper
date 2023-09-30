@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   app: {
     keepalive: true,
     pageTransition: { name: "page", mode: "out-in" },
+    head: {
+      title: "Wallpaper",
+    },
   },
   postcss: {
     plugins: {

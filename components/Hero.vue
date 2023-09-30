@@ -29,8 +29,8 @@ const { data, error, pending } = useAsyncData(
     <NuxtLink :to="`/detail/${data?.source}/${data?.id}`">
       <div class="relative h-[15em] lg:h-[30em]">
         <div class="absolute left-0 right-0 top-0 bottom-0">
-          <img
-            class="h-full w-full object-top object-cover rounded-2xl shadow-xl"
+          <LoadImage
+            class="h-full w-full object-top object-cover rounded-2xl shadow-xl overflow-hidden"
             :src="data?.url"
             alt="hero"
             referrerpolicy="no-referrer"

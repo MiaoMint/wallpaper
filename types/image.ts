@@ -1,4 +1,4 @@
-export type Source = string;
+export type Source = "wallhaven" | "konachan";
 export type Purity = "sfw" | "sketchy" | "nsfw";
 
 export interface Image {
@@ -12,7 +12,6 @@ export interface Image {
 export interface ImageDetail extends Image {
   tags: string[];
   url: string;
-  views: number;
-  fileSize: number;
-  favorites: number;
+  fileSize?: number;
+  imageSource?: string;
 }

@@ -1,4 +1,4 @@
-import { requestWallhaven } from "~/server/request";
+import { request } from "~/server/request";
 import { ImageDetail } from "~/types/image";
 
 export default defineEventHandler(
@@ -7,16 +7,14 @@ export default defineEventHandler(
     if (!id) {
       return null;
     }
-    const { data } = await requestWallhaven(`/w/${id}`);
+    const { data } = await request("wallhaven", `/w/${id}`);
     return {
       resolution: data.resolution,
       source: "wallhaven",
-      sample: data.thumbs.original,
+      sample: data.thumbs.large,
       id: data.id,
       tags: data.tags.map((tag: { name: any }) => tag.name),
       url: data.path,
-      views: data.views,
-      favorites: data.favorites,
       fileSize: data.file_size,
       purity: data.purity,
     };

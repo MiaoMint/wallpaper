@@ -40,13 +40,17 @@ const { data } = defineProps({
             </template>
           </LoadImage>
           <div
-            class="absolute bottom-0 left-3 right-3 h-16 flex items-center justify-between text-sm z-30"
+            class="absolute bottom-0 left-2 right-2 h-10 flex items-center justify-between text-xs z-30"
           >
-            <div class="bg-white bg-opacity-50 px-4 py-1 rounded-full">
-              <div class="text-sm">🖼 {{ data.resolution }}</div>
+            <div
+              class="bg-white bg-opacity-50 px-4 py-1 rounded-full flex-shrink-0"
+            >
+              <div>🖼 {{ data.resolution }}</div>
             </div>
-            <div class="bg-white bg-opacity-50 px-4 py-1 rounded-full">
-              <div class="text-sm">🌸 {{ data.source }}</div>
+            <div
+              class="bg-white bg-opacity-50 px-4 py-1 rounded-full flex-shrink-0"
+            >
+              <div>🌸 {{ data.source }}</div>
             </div>
           </div>
         </div>

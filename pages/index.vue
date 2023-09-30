@@ -13,13 +13,10 @@
 </template>
 
 <script setup lang="ts">
+import GridList from "~/components/Layout/GridList.vue";
 import { Image } from "~/types/image";
 
-definePageMeta({
-  title: "Wallhaven",
-  description: "Wallhaven",
-  scrollToTop: false,
-});
+console.log("https://github.com/MiaoMint/wallpaper");
 
 const page = ref(1);
 const list = ref<Image[]>([]);

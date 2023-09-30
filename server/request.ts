@@ -1,8 +1,28 @@
+import { Source } from "~/types/image";
 import { fetchJson } from "~/utils/fetch";
 
-export const requestWallhaven = async (
+interface Init extends RequestInit {
+  resultType?: "json" | "text";
+}
+
+export const request = async (
+  source: Source,
   input: RequestInfo | URL,
-  init?: RequestInit | undefined,
+  init?: Init | undefined,
 ) => {
-  return await fetchJson(`https://wallhaven.cc/api/v1${input}`, init);
+  let baseUrl = "";
+  switch (source) {
+    case "wallhaven":
+      baseUrl = "https://wallhaven.cc/api/v1";
+      break;
+    case "konachan":
+      baseUrl = "https://konachan.com";
+      break;
+  }
+
+  if (init?.resultType === "text") {
+    return (await fetch(baseUrl + input, init)).text();
+  }
+
+  return await fetchJson(baseUrl + input, init);
 };

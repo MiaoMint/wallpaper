@@ -60,8 +60,16 @@ onUnmounted(() => {
 </script>
 <template>
   <div>
-    <slot v-if="error" name="error" :error="error" />
-    <slot v-else-if="loading" name="progress" :progress="progress" />
-    <slot v-else name="img" :src="srcUrl" :alt="alt" />
+    <slot v-if="error" name="error" :error="error">
+      {{ error }}
+    </slot>
+    <slot v-else-if="loading" name="progress" :progress="progress">
+      <div class="h-full w-full flex justify-center items-center">
+        <div class="text-lg">{{ Math.round(progress * 100) }}%</div>
+      </div>
+    </slot>
+    <slot v-else name="img" :src="srcUrl" :alt="alt">
+      <img class="w-full h-full object-cover" :src="srcUrl" :alt="alt" />
+    </slot>
   </div>
 </template>

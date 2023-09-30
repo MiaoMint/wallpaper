@@ -40,8 +40,12 @@ const apis = [
       </NuxtLink>
     </div>
     <div class="w-full flex justify-end text-lg">
-      <NuxtLink to="/favorite" class="px-4 py-1 hover:bg-gray-200 rounded">
-        <div>❤收藏</div>
+      <NuxtLink
+        to="/favorite"
+        class="px-4 py-1 hover:bg-gray-200 rounded"
+        exact-active-class="bg-gray-200"
+      >
+        <div>❤Favorites</div>
       </NuxtLink>
     </div>
   </nav>

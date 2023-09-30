@@ -1,4 +1,4 @@
-import { requestWallhaven } from "~/server/request";
+import { request } from "~/server/request";
 import { Image } from "~/types/image";
 
 export default defineEventHandler(async (event): Promise<Image[]> => {
@@ -6,7 +6,7 @@ export default defineEventHandler(async (event): Promise<Image[]> => {
   if (!kw) {
     return [];
   }
-  const { data } = await requestWallhaven(`/search?page=${page}&q=${kw}`);
+  const { data } = await request("wallhaven", `/search?page=${page}&q=${kw}`);
   return data.map((image: any) => ({
     resolution: image.resolution,
     source: "wallhaven",

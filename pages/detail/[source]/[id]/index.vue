@@ -9,10 +9,11 @@ const { data, pending, error } = useFetch(`/api/${source}/detail?id=${id}`);
 let currentPosition = 0;
 
 const backgroundColor = ref("");
-let isTouchMove = false;
+const isTouchMove = ref(false);
+const isFavorited = ref(false);
 
 const onWindowScrool = () => {
-  if (isTouchMove) return;
+  if (isTouchMove.value) return;
   const sheet = document.getElementById("sheet");
   if (!sheet) return;
   const isScrollDown = window.scrollY > currentPosition;
@@ -31,7 +32,6 @@ const closeSheet = () => {
 };
 
 const onDrag = (e) => {
-  console.log(e);
   const sheet = document.getElementById("sheet");
   if (!sheet) return;
   // 鼠标的位置距离底部的位置
@@ -47,7 +47,7 @@ const onDrag = (e) => {
 };
 
 const onTouchmove = (e) => {
-  isTouchMove = true;
+  isTouchMove.value = true;
   const sheet = document.getElementById("sheet");
   if (!sheet) return;
   const { clientY } = e.touches[0];
@@ -61,21 +61,8 @@ const onTouchmove = (e) => {
   sheet.style.height = `${distance}px`;
 };
 
-onActivated(() => {
-  window.addEventListener("scroll", onWindowScrool);
-  document.body.style.backgroundRepeat = "no-repeat";
-  document.body.style.background = backgroundColor.value;
-});
-
-onDeactivated(() => {
-  window.removeEventListener("scroll", onWindowScrool);
-  // 重置背景颜色
-  document.body.style.background = "#fff";
-});
-
 const genBackground = () => {
   const img = document.getElementById("image");
-  console.log(img);
   if (!img) {
     return;
   }
@@ -96,6 +83,47 @@ const genBackground = () => {
       console.error(e);
     });
 };
+
+const download = () => {
+  // 获取 image 的 url
+  const img = document.getElementById("image");
+  if (!img) {
+    return;
+  }
+  // 下载图片
+  const a = document.createElement("a");
+  a.href = img.src;
+  a.download = data.value.url.split("/")?.pop();
+  a.click();
+};
+
+onMounted(() => {
+  isFavorited.value = isFavorite(id, source);
+
+  watch(isFavorited, (value) => {
+    if (!data.value) {
+      return;
+    }
+    console.log("isFavorited", value);
+    if (value) {
+      addFavorite(data.value);
+    } else {
+      removeFavorite(data.value);
+    }
+  });
+});
+
+onActivated(() => {
+  window.addEventListener("scroll", onWindowScrool);
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.background = backgroundColor.value;
+});
+
+onDeactivated(() => {
+  window.removeEventListener("scroll", onWindowScrool);
+  // 重置背景颜色
+  document.body.style.background = "#fff";
+});
 </script>
 <template>
   <div class="h-screen" v-if="pending">
@@ -148,17 +176,19 @@ const genBackground = () => {
         class="w-full fixed left-1/2 -translate-x-1/2 right-0 bottom-0 max-w-[1200px] transition-all h-28"
         id="sheet"
       >
-        <div class="bg-white rounded-t-xl shadow-lg border p-5 h-full">
-          <div class="h-4 relative">
+        <div class="bg-white rounded-t-xl shadow-lg border h-full">
+          <div
+            class="h-10 flex justify-center cursor-n-resize relative px-5"
+            @drag.prevet="onDrag"
+            @touchmove="onTouchmove"
+            @touchend="isTouchMove = false"
+            draggable="true"
+          >
             <div
-              class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden cursor-n-resize"
-              @drag.prevet="onDrag"
-              @touchmove="onTouchmove"
-              @touchend="isTouchMove = false"
-              draggable="true"
+              class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden"
             ></div>
             <!-- 暂时收起按钮 -->
-            <div class="absolute -top-2 -right-2 h-full flex items-center">
+            <div class="absolute top-0 right-2 h-full flex items-center">
               <button
                 class="text-gray-400 hover:text-gray-600"
                 @click="closeSheet"
@@ -181,7 +211,21 @@ const genBackground = () => {
               </button>
             </div>
           </div>
-          <div class="h-full overflow-auto">
+          <div class="h-full overflow-auto px-5 pb-10">
+            <!-- 收藏 & 下载 -->
+            <button
+              class="p-2 border rounded-lg mb-2 shadow-md mr-3"
+              @click="isFavorited = !isFavorited"
+            >
+              <span v-if="isFavorited"> ❤ </span>
+              <span v-else> 🖤 </span>
+            </button>
+            <button
+              class="p-2 border rounded-lg mb-2 shadow-md mr-3"
+              @click="download"
+            >
+              💾
+            </button>
             <h1 class="text-2xl font-bold">Tags</h1>
             <div class="flex flex-wrap mt-3">
               <div
@@ -192,9 +236,16 @@ const genBackground = () => {
                 {{ tag }}
               </div>
             </div>
+
             <div class="mt-3">
               <h1 class="text-2xl font-bold">Source</h1>
               {{ data.source }}
+              <a
+                v-if="data.imageSource"
+                :href="data.imageSource"
+                target="_blank"
+                >{{ data.imageSource }}</a
+              >
             </div>
             <div class="mt-3">
               <h1 class="text-2xl font-bold">Resolution</h1>
