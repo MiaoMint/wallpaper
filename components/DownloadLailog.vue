@@ -10,6 +10,7 @@ const faileds = ref<string[]>([]);
 const handelDownload = async () => {
   progress.value = 0;
   isDownloading.value = true;
+  faileds.value = [];
   const zipFileWriter = new BlobWriter();
   const zipWriter = new ZipWriter(zipFileWriter);
 
@@ -43,7 +44,7 @@ const handelDownload = async () => {
   >
     <div class="fixed bg-black bg-opacity-30 w-full h-full z-20"></div>
     <div
-      class="p-4 w-full md:w-[20rem] bg-white shadow-2xl rounded-xl border z-50"
+      class="p-4 w-full md:min-w-[20rem] md:w-auto bg-white shadow-2xl rounded-xl border z-50"
     >
       <h1 class="text-2xl mb-3">Download all images</h1>
       <!-- 显示数量 -->
@@ -55,9 +56,9 @@ const handelDownload = async () => {
       </div>
       <!-- 显示失败的图片 -->
       <div v-if="faileds.length" class="mb-3">
-        <div class="text-red-500">Failed:</div>
-        <div class="flex flex-wrap">
-          <div v-for="failed in faileds" :key="failed" class="mr-2">
+        <div class="text-red-500 mb-2">Failed({{faileds.length}}):</div>
+        <div class="max-w-2xl max-h-52 overflow-auto">
+          <div v-for="failed in faileds" :key="failed" class="break-words">
             {{ failed }}
           </div>
         </div>
