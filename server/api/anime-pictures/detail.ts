@@ -14,8 +14,6 @@ export default defineEventHandler(async (event): Promise<ImageDetail> => {
     post.ext
   }`;
 
-  console.log(post);
-
   return {
     id: post.id,
     sample: post.medium_preview,

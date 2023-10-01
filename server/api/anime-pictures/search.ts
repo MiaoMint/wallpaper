@@ -17,7 +17,7 @@ export default defineEventHandler(async (event): Promise<Image[]> => {
     const sample = `https://cdn.anime-pictures.net/previews/${md5.substring(
       0,
       3,
-    )}/${md5}_cp.jpg`;
+    )}/${md5}_cp.${image.have_alpha ? "png" : "jpg"}`;
     return {
       id: image.id,
       sample,
