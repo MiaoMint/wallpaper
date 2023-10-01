@@ -1,6 +1,12 @@
-# Nuxt 3 Minimal Starter
+# Wallpaper
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Support searching images from multiple sites, and support batch download
+
+![detail](screenshot/detail.png)
+
+![download](screenshot/download.png)
+
+
 
 ## Setup
 
