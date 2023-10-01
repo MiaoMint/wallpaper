@@ -45,7 +45,7 @@ const handelDownload = async () => {
     <div
       class="p-4 w-full md:w-[20rem] bg-white shadow-2xl rounded-xl border z-50"
     >
-      <h1 class="text-2xl mb-3">Download all image</h1>
+      <h1 class="text-2xl mb-3">Download all images</h1>
       <!-- 显示数量 -->
       <div class="flex justify-between mb-3">
         <div>Total: {{ images.length }}</div>
