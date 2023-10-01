@@ -14,6 +14,8 @@ const isFavorited = ref(false);
 
 const onWindowScrool = () => {
   if (isTouchMove.value) return;
+  // 如果是手机端，不需要滚动隐藏
+  if (window.innerWidth < 768) return;
   const sheet = document.getElementById("sheet");
   if (!sheet) return;
   const isScrollDown = window.scrollY > currentPosition;
@@ -47,18 +49,18 @@ const onDrag = (e) => {
 };
 
 const onTouchmove = (e) => {
-  isTouchMove.value = true;
-  const sheet = document.getElementById("sheet");
-  if (!sheet) return;
-  const { clientY } = e.touches[0];
-  if (clientY <= 0) {
-    sheet.style.transition = "all 0.3s";
-    return;
-  }
-  sheet.style.transition = "none";
-  const distance = window.innerHeight - clientY + 25;
-  if (distance > 400) return;
-  sheet.style.height = `${distance}px`;
+  // isTouchMove.value = true;
+  // const sheet = document.getElementById("sheet");
+  // if (!sheet) return;
+  // const { clientY } = e.touches[0];
+  // if (clientY <= 0) {
+  //   sheet.style.transition = "all 0.3s";
+  //   return;
+  // }
+  // sheet.style.transition = "none";
+  // const distance = window.innerHeight - clientY + 25;
+  // if (distance > 400) return;
+  // sheet.style.height = `${distance}px`;
 };
 
 const genBackground = () => {
