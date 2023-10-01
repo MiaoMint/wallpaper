@@ -11,6 +11,9 @@ dependencies:
   '@types/jsdom':
     specifier: ^21.1.3
     version: 21.1.3
+  '@zip.js/zip.js':
+    specifier: ^2.7.29
+    version: 2.7.29
   fast-average-color:
     specifier: ^9.4.0
     version: 9.4.0
@@ -2258,6 +2261,11 @@ packages:
 
   /@xtuc/long@4.2.2:
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
+    dev: false
+
+  /@zip.js/zip.js@2.7.29:
+    resolution: {integrity: sha512-KtOa3HY7Vi77ctZAVhx2nsKweDTCP4DVBghZkvg5qyIX6T/Z54QlU6f0q2hFhxu5j+LgUDeMMhiv2xj4ZF6snA==}
+    engines: {bun: '>=0.7.0', deno: '>=1.0.0', node: '>=16.5.0'}
     dev: false
 
   /abab@2.0.6:

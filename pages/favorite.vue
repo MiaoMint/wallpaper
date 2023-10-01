@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import GridList from "~/components/Layout/GridList.vue";
-import Waterfall from "~/components/Layout/Waterfall.vue";
 import { ImageDetail } from "~/types/image";
+import { BlobWriter } from "@zip.js/zip.js";
 
 const list = ref<ImageDetail[]>([]);
 const tags = ref<string[]>([]);
 const currentTag = ref<string | null>(null);
+const showDownloadDialog = ref(false);
 
 // 过滤出当前选中的标签的图片
 const onFilteredImages = (tag: string) => {
@@ -32,7 +33,15 @@ onActivated(() => {
 </script>
 <template>
   <div>
-    <div class="mb-8 text-2xl">Favorites</div>
+    <div class="mb-8 flex justify-between items-center">
+      <div class="text-2xl">Favorites</div>
+      <button
+        class="p-2 border rounded-lg mb-2 shadow"
+        @click="showDownloadDialog = true"
+      >
+        💾
+      </button>
+    </div>
     <div class="mb-8">
       <div class="flex flex-wrap max-h-[200px] overflow-auto">
         <Tag
@@ -51,5 +60,9 @@ onActivated(() => {
         <div class="text-xl">Add some!</div>
       </div>
     </div>
+    <DownloadLailog
+      v-if="showDownloadDialog"
+      @close="showDownloadDialog = false"
+    />
   </div>
 </template>
