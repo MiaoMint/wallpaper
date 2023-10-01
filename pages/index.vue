@@ -53,23 +53,7 @@ watch(selectSource, (value) => {
   <div id="app-scroller">
     <Hero class="mb-8" />
     <div class="mb-8">
-      <div class="flex overflow-auto space-x-4">
-        <button
-          v-for="item in Object.values(Source)"
-          :key="item"
-          :class="[
-            'flex-shrink-0',
-            {
-              'bg-gray-100': selectSource !== item,
-              'bg-gray-200': selectSource === item,
-            },
-          ]"
-          class="px-4 py-2 rounded-md"
-          @click="selectSource = item"
-        >
-          {{ item }}
-        </button>
-      </div>
+      <SourceSwitch v-model:select-source="selectSource" />
     </div>
     <div class="mb-8">
       <InfiniteLoad @load="handelLoad">

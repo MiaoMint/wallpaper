@@ -77,6 +77,9 @@ const genBackground = () => {
     radial-gradient(${color.hex}, transparent 65%) no-repeat 50%
       calc(100% + 20rem) / 60rem 30rem
       `;
+      if (useRoute().path !== `/detail/${source}/${id}`) {
+        return;
+      }
       document.body.style.background = backgroundColor.value;
     })
     .catch((e) => {

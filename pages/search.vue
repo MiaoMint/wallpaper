@@ -95,7 +95,10 @@ watch(selectSource, (value) => {
 });
 
 onActivated(() => {
-  handelSearch((useRoute().query.kw as string) || "");
+  const str = useRoute().query.kw as string;
+  if (str != kw.value && str) {
+    handelSearch(str);
+  }
   input.value?.focus();
 });
 
@@ -118,24 +121,8 @@ onDeactivated(() => {
         />
       </form>
     </div>
-    <div class="mb-8">
-      <div class="flex overflow-auto space-x-4">
-        <button
-          v-for="item in Object.values(Source)"
-          :key="item"
-          :class="[
-            'flex-shrink-0',
-            {
-              'bg-gray-100': selectSource !== item,
-              'bg-gray-200': selectSource === item,
-            },
-          ]"
-          class="px-4 py-2 rounded-md"
-          @click="selectSource = item"
-        >
-          {{ item }}
-        </button>
-      </div>
+    <div class="mb-3">
+      <SourceSwitch v-model:select-source="selectSource" />
     </div>
     <div class="mb-8">
       <div class="flex flex-wrap">
