@@ -7,7 +7,7 @@ export default defineEventHandler(async (event): Promise<Image[]> => {
     return [];
   }
 
-  const { items } = await request(Source.Zerochan, `/?p=${page}&json&s=${kw}`);
+  const { items } = await request(Source.Zerochan, `/${kw}?p=${page}&json`);
 
   return items.map((image: any): Image => {
     return {

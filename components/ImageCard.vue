@@ -13,7 +13,7 @@ const { data } = defineProps({
     <div class="relative transition-all cursor-pointer">
       <NuxtLink :to="`/detail/${data.source}/${data.id}`">
         <div
-          class="relative hover:-translate-y-3 shadow-xl transition-all rounded-2xl overflow-hidden"
+          class="relative hover:-translate-y-3 shadow-xl transition-all rounded-2xl border overflow-hidden"
         >
           <LoadImage
             ref="img"
