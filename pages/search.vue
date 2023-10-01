@@ -1,9 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import GridList from "~/components/Layout/GridList.vue";
+import { Image, Source } from "~/types/image";
 
-const list = ref([]);
+const list = ref<Image[]>([]);
 const page = ref(1);
-const kw = ref("");
+const kw = ref((useRoute().query.kw as string) || "");
+const isSearched = ref<boolean>(kw.value !== "" ?? false);
+const input = ref<HTMLInputElement>();
+const selectSource = ref<Source>(
+  (useRoute().query.source as Source) ?? Source.Wallhaven,
+);
 
 // 获取 tags
 const { data: tags } = useAsyncData(
@@ -20,31 +26,37 @@ const { data: tags } = useAsyncData(
   },
 );
 
-const { data, pending } = useAsyncData(
-  "list",
+const { data, pending, error, refresh } = useAsyncData(
+  `list-${kw.value}`,
   async () => {
     const data = await fetchJson(
-      `/api/wallhaven/search?kw=${kw.value}&page=${page.value}`,
+      `/api/${selectSource.value}/search?kw=${kw.value}&page=${page.value}`,
     );
     return data;
   },
   {
     server: false,
-    watch: [page, kw],
+    watch: [page],
   },
 );
 
-const onSearch = (e) => {
+const onSubmit = (e: Event) => {
   e.preventDefault();
-  list.value = [];
-  page.value = 1;
-  kw.value = e.target[0].value;
+  handelSearch();
 };
 
-const onFilteredImages = (tag) => {
+const handelSearch = (tags?: string) => {
+  isSearched.value = true;
   list.value = [];
   page.value = 1;
-  kw.value = tag;
+  tags && (kw.value = tags);
+  const source = useRoute().query.source;
+  if (source) {
+    selectSource.value = source as Source;
+  } else {
+    selectSource.value = Source.Wallhaven;
+  }
+  refresh();
 };
 
 const handelLoad = () => {
@@ -54,44 +66,76 @@ const handelLoad = () => {
   page.value++;
 };
 
-watch(
-  data,
-  (value) => {
-    if (!value) {
-      return;
-    }
-    list.value = [...list.value, ...value];
-  },
-  {
-    immediate: true,
-  },
-);
+watch(data, (value) => {
+  if (!value) {
+    return;
+  }
+  list.value = [...list.value, ...value];
+});
 
-const handelFocus = () => {
-  // 聚焦搜索框
-  const input = document.querySelector("input");
-  input && input.focus(
-    {
-      immediate: true,
-    }
-  );
-};
+watch(kw, (value) => {
+  useRouter().replace({
+    query: {
+      kw: value,
+      source: selectSource.value,
+    },
+  });
+});
+
+watch(selectSource, (value) => {
+  list.value = [];
+  page.value = 1;
+  useRouter().replace({
+    query: {
+      source: value,
+      kw: kw.value,
+    },
+  });
+  refresh();
+});
 
 onActivated(() => {
-  handelFocus();
+  handelSearch((useRoute().query.kw as string) || "");
+  input.value?.focus();
+});
+
+onDeactivated(() => {
+  input.value?.blur();
 });
 </script>
 <template>
   <div class="mt-10">
     <div class="mb-8 text-2xl">Search</div>
     <div class="mb-8">
-      <form @submit="onSearch">
+      <form @submit="onSubmit">
         <input
           type="text"
           class="border shadow-sm border-gray-300 rounded-md px-3 py-1 w-full md:w-96"
           placeholder="Search..."
+          autofocus
+          v-model="kw"
+          ref="input"
         />
       </form>
+    </div>
+    <div class="mb-8">
+      <div class="flex overflow-auto space-x-4">
+        <button
+          v-for="item in Object.values(Source)"
+          :key="item"
+          :class="[
+            'flex-shrink-0',
+            {
+              'bg-gray-100': selectSource !== item,
+              'bg-gray-200': selectSource === item,
+            },
+          ]"
+          class="px-4 py-2 rounded-md"
+          @click="selectSource = item"
+        >
+          {{ item }}
+        </button>
+      </div>
     </div>
     <div class="mb-8">
       <div class="flex flex-wrap">
@@ -99,17 +143,16 @@ onActivated(() => {
           v-for="tag in tags"
           :key="tag"
           :selected="kw === tag"
-          @click="onFilteredImages(tag)"
+          @click="handelSearch(tag)"
           :tag="tag"
         />
       </div>
     </div>
-    <InfiniteLoad @load="handelLoad">
+    <InfiniteLoad v-if="isSearched" @load="handelLoad">
       <div class="mb-8">
         <GridList v-if="list.length" :data="list" />
-        <div v-else class="text-center mt-20 flex flex-col justify-center">
-          <div class="text-2xl">No More data</div>
-        </div>
+        <div v-if="pending">Loading...</div>
+        <div v-if="error">{{ error }}</div>
       </div>
     </InfiniteLoad>
   </div>

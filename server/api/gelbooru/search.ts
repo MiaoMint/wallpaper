@@ -2,10 +2,13 @@ import { request } from "~/server/request";
 import { Image, Purity, Source } from "~/types/image";
 
 export default defineEventHandler(async (event): Promise<Image[]> => {
-  const { page } = getQuery(event);
+  const { kw, page } = getQuery(event);
+  if (!kw) {
+    return [];
+  }
   const { post } = await request(
     Source.Gelbooru,
-    `/index.php?page=dapi&s=post&q=index&json=1&pid=${page}`,
+    `/index.php?page=dapi&s=post&q=index&json=1&pid=${page}&tags=${kw}`,
   );
 
   return post.map((image: any): Image => {

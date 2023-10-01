@@ -17,7 +17,6 @@ const props = defineProps({
 });
 
 const list = computed(() => {
-  console.log(props.data);
   return props.data.filter((item: Image) => {
     if (item.purity === "nsfw" && !props.showNSFW) return false;
     return true;

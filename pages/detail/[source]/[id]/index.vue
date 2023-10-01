@@ -138,14 +138,14 @@ onDeactivated(() => {
   </div>
   <div v-else>
     <div class="flex flex-col items-center">
-      <div class="w-full min-h-screen">
+      <div class="w-full md:min-h-screen">
         <LoadImage
           class="h-full w-full flex justify-center"
           :src="data.url"
           alt="image"
         >
           <template #progress="{ progress }">
-            <div class="h-screen">
+            <div class="md:h-screen">
               <div
                 class="h-3/4 flex flex-col justify-center items-center text-3xl"
               >
@@ -173,10 +173,12 @@ onDeactivated(() => {
         </LoadImage>
       </div>
       <div
-        class="w-full fixed left-1/2 -translate-x-1/2 right-0 bottom-0 max-w-[1200px] transition-all h-28"
+        class="w-full md:fixed md:left-1/2 md:-translate-x-1/2 md:right-0 md:bottom-0 max-w-[1200px] transition-all md:h-28"
         id="sheet"
       >
-        <div class="bg-white rounded-t-xl shadow-lg border h-full">
+        <div
+          class="bg-white rounded-xl md:rounded-t-xl md:rounded-b-none shadow-lg border h-full"
+        >
           <div
             class="h-10 flex justify-center cursor-n-resize relative px-5"
             @drag.prevet="onDrag"
@@ -185,10 +187,12 @@ onDeactivated(() => {
             draggable="true"
           >
             <div
-              class="w-32 m-auto h-1 rounded-full bg-gray-400 overflow-hidden"
+              class="w-32 hidden md:block m-auto h-1 rounded-full bg-gray-400 overflow-hidden"
             ></div>
             <!-- 暂时收起按钮 -->
-            <div class="absolute top-0 right-2 h-full flex items-center">
+            <div
+              class="hidden absolute top-0 right-2 h-full md:flex items-center"
+            >
               <button
                 class="text-gray-400 hover:text-gray-600"
                 @click="closeSheet"
@@ -228,13 +232,20 @@ onDeactivated(() => {
             </button>
             <h1 class="text-2xl font-bold">Tags</h1>
             <div class="flex flex-wrap mt-3">
-              <div
+              <NuxtLink
+                :to="{
+                  name: 'search',
+                  query: {
+                    source: data.source,
+                    kw: tag,
+                  },
+                }"
                 v-for="tag in data.tags"
                 :key="tag"
                 class="bg-slate-300 rounded-full px-3 py-1 text-sm mr-2 mb-2"
               >
                 {{ tag }}
-              </div>
+              </NuxtLink>
             </div>
 
             <div class="mt-3">

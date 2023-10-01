@@ -36,7 +36,11 @@ const { data } = defineProps({
               </div>
             </template>
             <template #img="{ src, alt }">
-              <img :src="src" :alt="alt" class="w-full h-full object-cover" />
+              <img
+                :src="src"
+                :alt="alt"
+                class="w-full h-full md:h-[15vw] min-h-[100px] md:max-h-[180px] object-cover"
+              />
             </template>
           </LoadImage>
           <div

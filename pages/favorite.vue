@@ -34,7 +34,7 @@ onActivated(() => {
   <div>
     <div class="mb-8 text-2xl">Favorites</div>
     <div class="mb-8">
-      <div class="flex flex-wrap">
+      <div class="flex flex-wrap max-h-[200px] overflow-auto">
         <Tag
           v-for="tag in tags"
           :key="tag"

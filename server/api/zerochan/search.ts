@@ -2,23 +2,22 @@ import { request } from "~/server/request";
 import { Image, Purity, Source } from "~/types/image";
 
 export default defineEventHandler(async (event): Promise<Image[]> => {
-  const { kw, page } = getQuery(event);
+  const { page, kw } = getQuery(event);
   if (!kw) {
     return [];
   }
-  const data = await request(
-    Source.Konachan,
-    `/post.json?page=${page}&tags=${kw}`,
-  );
-  return data.map(
-    (image: any): Image => ({
+
+  const { items } = await request(Source.Zerochan, `/?p=${page}&json&s=${kw}`);
+
+  return items.map((image: any): Image => {
+    return {
       id: image.id,
-      sample: image.preview_url,
-      source: Source.Konachan,
-      purity: (image.rating === "s" ? "sfw" : "nsfw") as Purity,
+      sample: image.thumbnail,
+      source: Source.Zerochan,
+      purity: Purity.SFW,
       resolution: `${image.width}x${image.height}`,
       height: image.height,
       width: image.width,
-    }),
-  );
+    };
+  });
 });

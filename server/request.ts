@@ -12,11 +12,20 @@ export const request = async (
 ) => {
   let baseUrl = "";
   switch (source) {
-    case "wallhaven":
+    case Source.Wallhaven:
       baseUrl = "https://wallhaven.cc/api/v1";
       break;
-    case "konachan":
+    case Source.Konachan:
       baseUrl = "https://konachan.com";
+      break;
+    case Source.Gelbooru:
+      baseUrl = "https://gelbooru.com";
+      break;
+    case Source.Zerochan:
+      baseUrl = "https://www.zerochan.net";
+      break;
+    case Source.AnimePictures:
+      baseUrl = "https://anime-pictures.net/api/v3";
       break;
   }
 

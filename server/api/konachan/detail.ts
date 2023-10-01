@@ -1,5 +1,5 @@
 import { request } from "~/server/request";
-import { ImageDetail } from "~/types/image";
+import { ImageDetail, Purity, Source } from "~/types/image";
 import { JSDOM } from "jsdom";
 
 export default defineEventHandler(
@@ -8,7 +8,7 @@ export default defineEventHandler(
     if (!id) {
       return null;
     }
-    const html = await request("konachan", `/post/show/${id}`, {
+    const html = await request(Source.Konachan, `/post/show/${id}`, {
       resultType: "text",
     });
 
@@ -21,19 +21,25 @@ export default defineEventHandler(
       0,
       2,
     )}/${md5.slice(2, 4)}/${md5}.jpg`;
+
+    const resolution = doc
+      .querySelector("#stats")
+      ?.textContent?.match(/(\d+)x(\d+)/)
+      ?.slice(1);
+
+    const height = Number(resolution?.[1] ?? 0);
+    const width = Number(resolution?.[0] ?? 0);
+
     return {
       id: String(id),
       sample,
-      source: "konachan",
-      purity: doc.querySelector("#stats")?.textContent?.includes("Rating: Safe")
+      source: Source.Konachan,
+      purity: (doc
+        .querySelector("#stats")
+        ?.textContent?.includes("Rating: Safe")
         ? "sfw"
-        : "nsfw",
-      resolution:
-        doc
-          .querySelector("#stats")
-          ?.textContent?.match(/(\d+)x(\d+)/)
-          ?.slice(1)
-          .join("x") ?? "",
+        : "nsfw") as Purity,
+      resolution: resolution?.join("x") ?? "",
       tags: [...doc.querySelectorAll("#tag-sidebar li a:nth-child(2)")].map(
         (tag) => tag.textContent ?? "",
       ),
@@ -42,6 +48,8 @@ export default defineEventHandler(
         doc
           .querySelector("#stats > ul > li:nth-child(5) > a")
           ?.getAttribute("href") ?? "",
+      height,
+      width,
     };
   },
 );
