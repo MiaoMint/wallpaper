@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { FastAverageColor } from "fast-average-color";
 
 const router = useRoute();
@@ -11,44 +11,43 @@ let currentPosition = 0;
 const backgroundColor = ref("");
 const isTouchMove = ref(false);
 const isFavorited = ref(false);
+const image = ref<HTMLImageElement>();
+const sheet = ref<HTMLDivElement>();
 
 const onWindowScrool = () => {
   if (isTouchMove.value) return;
   // 如果是手机端，不需要滚动隐藏
   if (window.innerWidth < 768) return;
-  const sheet = document.getElementById("sheet");
-  if (!sheet) return;
+  if (!sheet.value) return;
   const isScrollDown = window.scrollY > currentPosition;
   currentPosition = window.scrollY;
   if (isScrollDown) {
-    sheet.style.bottom = "-100%";
+    sheet.value.style.bottom = "-100%";
   } else {
-    sheet.style.bottom = "0";
+    sheet.value.style.bottom = "0";
   }
 };
 
 const closeSheet = () => {
-  const sheet = document.getElementById("sheet");
-  if (!sheet) return;
-  sheet.style.bottom = "-100%";
+  if (!sheet.value) return;
+  sheet.value.style.bottom = "-100%";
 };
 
-const onDrag = (e) => {
-  const sheet = document.getElementById("sheet");
-  if (!sheet) return;
+const onDrag = (e: DragEvent) => {
+  if (!sheet.value) return;
   // 鼠标的位置距离底部的位置
   const { clientY } = e;
   if (clientY <= 0) {
-    sheet.style.transition = "all 0.3s";
+    sheet.value.style.transition = "all 0.3s";
     return;
   }
-  sheet.style.transition = "none";
+  sheet.value.style.transition = "none";
   const distance = window.innerHeight - clientY + 25;
   if (distance > 300) return;
-  sheet.style.height = `${distance}px`;
+  sheet.value.style.height = `${distance}px`;
 };
 
-const onTouchmove = (e) => {
+const onTouchmove = (e: TouchEvent) => {
   // isTouchMove.value = true;
   // const sheet = document.getElementById("sheet");
   // if (!sheet) return;
@@ -64,13 +63,12 @@ const onTouchmove = (e) => {
 };
 
 const genBackground = () => {
-  const img = document.getElementById("image");
-  if (!img) {
+  if (!image.value) {
     return;
   }
   const fac = new FastAverageColor();
   fac
-    .getColorAsync(img)
+    .getColorAsync(image.value)
     .then((color) => {
       backgroundColor.value = `
       linear-gradient(215deg, ${color.hex}, transparent 40%),
@@ -88,19 +86,34 @@ const genBackground = () => {
 
 const download = () => {
   // 获取 image 的 url
-  const img = document.getElementById("image");
-  if (!img) {
+  if (!image.value) {
     return;
   }
   // 下载图片
   const a = document.createElement("a");
-  a.href = img.src;
-  a.download = data.value.url.split("/")?.pop();
+  a.href = image.value.src;
+  a.download = data.value!.url.split("/")?.pop() as string;
   a.click();
 };
 
+// 处理 zoom 的逻辑 需要监听 ctrl + 鼠标滚轮
+
+const handelZoom = (e: WheelEvent) => {
+  if (!image.value) {
+    return;
+  }
+  if (!e.ctrlKey) {
+    return;
+  }
+  e.preventDefault();
+  const { deltaY } = e;
+  const { width } = image.value.getBoundingClientRect();
+  const scale = deltaY > 0 ? 0.9 : 1.1;
+  image.value.style.width = `${width * scale}px`;
+};
+
 onMounted(() => {
-  isFavorited.value = isFavorite(id, source);
+  isFavorited.value = isFavorite(id as string, source as string);
 
   watch(isFavorited, (value) => {
     if (!data.value) {
@@ -117,12 +130,16 @@ onMounted(() => {
 
 onActivated(() => {
   window.addEventListener("scroll", onWindowScrool);
+  window.addEventListener("wheel", handelZoom, {
+    passive: false,
+  });
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.background = backgroundColor.value;
 });
 
 onDeactivated(() => {
   window.removeEventListener("scroll", onWindowScrool);
+  window.removeEventListener("wheel", handelZoom);
   // 重置背景颜色
   document.body.style.background = "#fff";
 });
@@ -138,7 +155,7 @@ onDeactivated(() => {
     <h1 class="text-2xl font-bold">Error</h1>
     <p>{{ error }}</p>
   </div>
-  <div v-else>
+  <div v-else-if="data">
     <div class="flex flex-col items-center">
       <div class="w-full md:min-h-screen">
         <LoadImage
@@ -168,7 +185,7 @@ onDeactivated(() => {
                 :src="src"
                 :alt="alt"
                 @load="genBackground"
-                id="image"
+                ref="image"
               />
             </a>
           </template>
@@ -176,7 +193,7 @@ onDeactivated(() => {
       </div>
       <div
         class="w-full md:fixed md:left-1/2 md:-translate-x-1/2 md:right-0 md:bottom-0 max-w-[1200px] transition-all md:h-28"
-        id="sheet"
+        ref="sheet"
       >
         <div
           class="bg-white rounded-xl md:rounded-t-xl md:rounded-b-none shadow-lg border h-full"
@@ -271,6 +288,12 @@ onDeactivated(() => {
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div v-else>
+    <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
+      <div>🤔</div>
+      <div>404</div>
     </div>
   </div>
 </template>
