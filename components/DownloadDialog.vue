@@ -44,7 +44,7 @@ const handelDownload = async () => {
   >
     <div class="fixed bg-black bg-opacity-30 w-full h-full z-20"></div>
     <div
-      class="p-4 w-full md:min-w-[20rem] md:w-auto bg-white shadow-2xl rounded-xl border z-50"
+      class="mx-4 p-4 w-full md:min-w-[20rem] md:w-auto bg-white shadow-2xl rounded-xl border z-50"
     >
       <h1 class="text-2xl mb-3">Download all images</h1>
       <!-- 显示数量 -->

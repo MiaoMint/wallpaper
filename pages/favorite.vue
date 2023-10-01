@@ -60,7 +60,7 @@ onActivated(() => {
         <div class="text-xl">Add some!</div>
       </div>
     </div>
-    <DownloadLailog
+    <DownloadDialog
       v-if="showDownloadDialog"
       @close="showDownloadDialog = false"
     />
