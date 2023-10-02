@@ -7,15 +7,39 @@ const { data } = defineProps({
     required: true,
   },
 });
+
+const image = ref<HTMLDivElement>();
+const visible = ref(false);
+
+// 滚动到可视区域时加载图片
+let observer: IntersectionObserver;
+
+watch(visible, (value) => {
+  console.log(value, data);
+  observer.disconnect();
+});
+
+onMounted(() => {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        visible.value = true;
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+  observer.observe(image.value!);
+});
 </script>
 <template>
   <AnimationElement :deg="10">
-    <div class="relative transition-all cursor-pointer">
+    <div ref="image" class="relative transition-all cursor-pointer">
       <NuxtLink :to="`/detail/${data.source}/${data.id}`">
         <div
           class="relative hover:-translate-y-3 shadow-xl transition-all rounded-2xl border overflow-hidden"
         >
           <LoadImage
+            v-if="visible"
             ref="img"
             class="w-full h-ful z-20"
             :src="data.sample"
@@ -43,6 +67,10 @@ const { data } = defineProps({
               />
             </template>
           </LoadImage>
+          <div
+            v-else
+            class="w-full h-full md:h-[15vw] min-h-[100px] md:max-h-[180px]"
+          ></div>
           <div
             class="absolute bottom-0 left-2 right-2 h-10 flex items-center justify-between text-xs z-30"
           >
