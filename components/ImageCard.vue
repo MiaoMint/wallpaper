@@ -23,7 +23,7 @@ const handelMouseEnter = (e: MouseEvent) => {
   }
   timer = setTimeout(() => {
     isHover.value = true;
-  }, 1000);
+  }, 500);
 };
 
 const handelMouseLeave = () => {
@@ -37,22 +37,26 @@ watch(visible, (value) => {
 });
 
 onMounted(() => {
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        visible.value = true;
-        observer.unobserve(entry.target);
-      }
+  if (image.value) {
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          visible.value = true;
+          observer.unobserve(entry.target);
+        }
+      });
     });
-  });
-  observer.observe(image.value!);
-  image.value!.addEventListener("mouseenter", handelMouseEnter);
-  image.value!.addEventListener("mouseleave", handelMouseLeave);
+    observer.observe(image.value!);
+    image.value!.addEventListener("mouseenter", handelMouseEnter);
+    image.value!.addEventListener("mouseleave", handelMouseLeave);
+  }
 });
 
 onUnmounted(() => {
-  image.value!.removeEventListener("mouseenter", handelMouseEnter);
-  image.value!.removeEventListener("mouseleave", handelMouseLeave);
+  if (image.value) {
+    image.value!.removeEventListener("mouseenter", handelMouseEnter);
+    image.value!.removeEventListener("mouseleave", handelMouseLeave);
+  }
 });
 </script>
 <template>
@@ -75,7 +79,7 @@ onUnmounted(() => {
           <LoadImage
             v-if="visible"
             ref="img"
-            class="w-full h-full z-500 flex justify-center items-center"
+            class="w-full h-full flex justify-center items-center"
             :src="data.sample"
             :alt="data.resolution"
           >
@@ -87,9 +91,10 @@ onUnmounted(() => {
                 :src="src"
                 :alt="alt"
                 :class="[
-                  'h-full w-full object-cover rounded-2xl ',
+                  'w-full object-cover rounded-2xl',
                   {
-                    'absolute left-1/2 -translate-x-1/2 h-auto z-40': isHover,
+                    'h-full': !isHover,
+                    'h-auto z-40 shadow-xl': isHover,
                   },
                 ]"
               />
