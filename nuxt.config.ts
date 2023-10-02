@@ -9,6 +9,11 @@ export default defineNuxtConfig({
       title: "Wallpaper",
     },
   },
+  runtimeConfig: {
+    public: {
+      IMAGE_PROXY_PREFIX: process.env.IMAGE_PROXY_PREFIX,
+    },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

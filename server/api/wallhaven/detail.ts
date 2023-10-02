@@ -5,6 +5,7 @@ export default defineEventHandler(
   async (event): Promise<ImageDetail | null> => {
     const { id } = getQuery(event);
     if (!id) {
+      setResponseStatus(event, 400);
       return null;
     }
     const { data } = await request(Source.Wallhaven, `/w/${id}`);

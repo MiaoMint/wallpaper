@@ -16,7 +16,9 @@ const loading = ref(true);
 
 const fetchImage = async () => {
   try {
-    const res = await fetch(`/api/image?url=${src}`);
+    const res = await fetch(
+      `${useRuntimeConfig().public.IMAGE_PROXY_PREFIX}${src}`,
+    );
     if (!res.ok) {
       throw new Error("Not ok");
     }

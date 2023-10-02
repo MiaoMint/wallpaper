@@ -6,6 +6,7 @@ export default defineEventHandler(
   async (event): Promise<ImageDetail | null> => {
     const { id } = getQuery(event);
     if (!id) {
+      setResponseStatus(event, 400);
       return null;
     }
     const html = await request(Source.Konachan, `/post/show/${id}`, {

@@ -4,6 +4,7 @@ import { Image, Source } from "~/types/image";
 export default defineEventHandler(async (event): Promise<Image[]> => {
   const { kw, page } = getQuery(event);
   if (!kw) {
+    setResponseStatus(event, 400);
     return [];
   }
   const { data } = await request(

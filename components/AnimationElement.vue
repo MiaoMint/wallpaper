@@ -31,18 +31,34 @@ const onMouseLeave = () => {
   div.value!.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
 };
 
-onMounted(() => {
+const mounted = () => {
   if (div.value) {
     div.value.addEventListener("mousemove", onMouseMove);
     div.value.addEventListener("mouseleave", onMouseLeave);
   }
-});
+};
 
-onUnmounted(() => {
+const unmounted = () => {
   if (div.value) {
     div.value.removeEventListener("mousemove", onMouseMove);
     div.value.removeEventListener("mouseleave", onMouseLeave);
   }
+};
+
+onMounted(() => {
+  mounted();
+});
+
+onUnmounted(() => {
+  unmounted();
+});
+
+onActivated(() => {
+  mounted();
+});
+
+onDeactivated(() => {
+  unmounted();
 });
 </script>
 <template>
