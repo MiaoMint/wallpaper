@@ -1,5 +1,0 @@
-{
-  "env": {
-    "IMAGE_PROXY_PREFIX": "/api/image?url="
-  }
-}
