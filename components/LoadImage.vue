@@ -63,7 +63,9 @@ onUnmounted(() => {
 <template>
   <div>
     <slot v-if="error" name="error" :error="error">
-      {{ error }}
+      <div class="h-full w-full flex justify-center items-center">
+        {{ error }}
+      </div>
     </slot>
     <slot v-else-if="loading" name="progress" :progress="progress">
       <div class="h-full w-full flex justify-center items-center">
