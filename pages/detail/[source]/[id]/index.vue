@@ -4,7 +4,7 @@ import { FastAverageColor } from "fast-average-color";
 const router = useRoute();
 const { id, source } = router.params;
 const { data, pending, error } = useFetch(`/api/${source}/detail?id=${id}`);
-const href = useRequestURL().href;
+const requestUrl = useRequestURL();
 
 // 当前位置
 let currentPosition = 0;
@@ -153,7 +153,16 @@ onDeactivated(() => {
     <Meta name="og:title" content="wallpaper" />
     <Meta name="og:type" content="article" />
     <Meta name="og:image" :content="data?.sample" />
-    <Meta name="og:url" :content="href" />
+    <Meta name="og:url" :content="requestUrl.href" />
+    <Meta property="og:description" content="wallpaper" />
+
+    <Meta name="twitter:card" content="summary_large_image" />
+    <Meta property="twitter:domain" :content="requestUrl.host" />
+    <Meta property="twitter:url" :content="requestUrl.href" />
+    <Meta name="twitter:title" content="wallpaper" />
+    <Meta name="twitter:image" :content="data?.sample" />
+    <Meta name="twitter:description" content="wallpaper" />
+
     <div class="h-screen" v-if="pending">
       <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
         <div>🤔</div>

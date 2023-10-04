@@ -7,6 +7,12 @@ export default defineNuxtConfig({
     pageTransition: { name: "page", mode: "out-in" },
     head: {
       title: "Wallpaper",
+      meta: [
+        {
+          name: "description",
+          content: "Wallpaper",
+        },
+      ],
     },
   },
   runtimeConfig: {
