@@ -4,6 +4,7 @@ import { FastAverageColor } from "fast-average-color";
 const router = useRoute();
 const { id, source } = router.params;
 const { data, pending, error } = useFetch(`/api/${source}/detail?id=${id}`);
+const href = useRequestURL().href;
 
 // 当前位置
 let currentPosition = 0;
@@ -148,156 +149,161 @@ onDeactivated(() => {
 });
 </script>
 <template>
-  <Meta name="og:image" :content="data?.sample" />
-  <div class="h-screen" v-if="pending">
-    <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
-      <div>🤔</div>
-      <div>Loading...</div>
-    </div>
-  </div>
-  <div v-else-if="error" class="text-center">
-    <h1 class="text-2xl font-bold">Error</h1>
-    <p>{{ error }}</p>
-  </div>
-  <div v-else-if="data">
-    <div class="flex flex-col items-center">
-      <div class="w-full md:min-h-screen">
-        <LoadImage
-          class="h-full w-full flex justify-center"
-          :src="data.url"
-          alt="image"
-        >
-          <template #progress="{ progress }">
-            <div class="md:h-screen">
-              <div
-                class="h-3/4 flex flex-col justify-center items-center text-3xl"
-              >
-                <div>🤤</div>
-                <div>{{ Math.floor(progress * 100) }}%</div>
-              </div>
-            </div>
-          </template>
-          <template #error="{ error }">
-            <div>
-              {{ error }}
-            </div>
-          </template>
-          <template #img="{ src, alt }">
-            <a :href="data.url" target="_blank" rel="noopener noreferrer">
-              <img
-                class="shadow-md rounded-lg mb-8"
-                :src="src"
-                :alt="alt"
-                @load="genBackground"
-                ref="image"
-              />
-            </a>
-          </template>
-        </LoadImage>
+  <div>
+    <Meta name="og:title" content="wallpaper" />
+    <Meta name="og:type" content="article" />
+    <Meta name="og:image" :content="data?.sample" />
+    <Meta name="og:url" :content="href" />
+    <div class="h-screen" v-if="pending">
+      <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
+        <div>🤔</div>
+        <div>Loading...</div>
       </div>
-      <div
-        class="w-full md:fixed md:left-1/2 md:-translate-x-1/2 md:right-0 md:bottom-0 max-w-[1200px] transition-all md:h-28"
-        ref="sheet"
-      >
+    </div>
+    <div v-else-if="error" class="text-center">
+      <h1 class="text-2xl font-bold">Error</h1>
+      <p>{{ error }}</p>
+    </div>
+    <div v-else-if="data">
+      <div class="flex flex-col items-center">
+        <div class="w-full md:min-h-screen">
+          <LoadImage
+            class="h-full w-full flex justify-center"
+            :src="data.url"
+            alt="image"
+          >
+            <template #progress="{ progress }">
+              <div class="md:h-screen">
+                <div
+                  class="h-3/4 flex flex-col justify-center items-center text-3xl"
+                >
+                  <div>🤤</div>
+                  <div>{{ Math.floor(progress * 100) }}%</div>
+                </div>
+              </div>
+            </template>
+            <template #error="{ error }">
+              <div>
+                {{ error }}
+              </div>
+            </template>
+            <template #img="{ src, alt }">
+              <a :href="data.url" target="_blank" rel="noopener noreferrer">
+                <img
+                  class="shadow-md rounded-lg mb-8"
+                  :src="src"
+                  :alt="alt"
+                  @load="genBackground"
+                  ref="image"
+                />
+              </a>
+            </template>
+          </LoadImage>
+        </div>
         <div
-          class="bg-white rounded-xl md:rounded-t-xl md:rounded-b-none shadow-lg border h-full"
+          class="w-full md:fixed md:left-1/2 md:-translate-x-1/2 md:right-0 md:bottom-0 max-w-[1200px] transition-all md:h-28"
+          ref="sheet"
         >
           <div
-            class="h-10 flex justify-center cursor-n-resize relative px-5"
-            @drag.prevet="onDrag"
-            @touchmove="onTouchmove"
-            @touchend="isTouchMove = false"
-            draggable="true"
+            class="bg-white rounded-xl md:rounded-t-xl md:rounded-b-none shadow-lg border h-full"
           >
             <div
-              class="w-32 hidden md:block m-auto h-1 rounded-full bg-gray-400 overflow-hidden"
-            ></div>
-            <!-- 暂时收起按钮 -->
-            <div
-              class="hidden absolute top-0 right-2 h-full md:flex items-center"
+              class="h-10 flex justify-center cursor-n-resize relative px-5"
+              @drag.prevet="onDrag"
+              @touchmove="onTouchmove"
+              @touchend="isTouchMove = false"
+              draggable="true"
             >
-              <button
-                class="text-gray-400 hover:text-gray-600"
-                @click="closeSheet"
+              <div
+                class="w-32 hidden md:block m-auto h-1 rounded-full bg-gray-400 overflow-hidden"
+              ></div>
+              <!-- 暂时收起按钮 -->
+              <div
+                class="hidden absolute top-0 right-2 h-full md:flex items-center"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-x"
+                <button
+                  class="text-gray-400 hover:text-gray-600"
+                  @click="closeSheet"
                 >
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-x"
+                  >
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="h-full overflow-auto px-5 pb-10">
+              <!-- 收藏 & 下载 -->
+              <button
+                class="p-2 border rounded-lg mb-2 shadow-md mr-3"
+                @click="isFavorited = !isFavorited"
+              >
+                <span v-if="isFavorited"> ❤ </span>
+                <span v-else> 🖤 </span>
               </button>
-            </div>
-          </div>
-          <div class="h-full overflow-auto px-5 pb-10">
-            <!-- 收藏 & 下载 -->
-            <button
-              class="p-2 border rounded-lg mb-2 shadow-md mr-3"
-              @click="isFavorited = !isFavorited"
-            >
-              <span v-if="isFavorited"> ❤ </span>
-              <span v-else> 🖤 </span>
-            </button>
-            <button
-              class="p-2 border rounded-lg mb-2 shadow-md mr-3"
-              @click="download"
-            >
-              💾
-            </button>
-            <h1 class="text-2xl font-bold">Tags</h1>
-            <div class="flex flex-wrap mt-3">
-              <NuxtLink
-                :to="{
-                  name: 'search',
-                  query: {
-                    source: data.source,
-                    kw: tag,
-                  },
-                }"
-                v-for="tag in data.tags"
-                :key="tag"
-                class="bg-slate-300 rounded-full px-3 py-1 text-sm mr-2 mb-2"
+              <button
+                class="p-2 border rounded-lg mb-2 shadow-md mr-3"
+                @click="download"
               >
-                {{ tag }}
-              </NuxtLink>
-            </div>
+                💾
+              </button>
+              <h1 class="text-2xl font-bold">Tags</h1>
+              <div class="flex flex-wrap mt-3">
+                <NuxtLink
+                  :to="{
+                    name: 'search',
+                    query: {
+                      source: data.source,
+                      kw: tag,
+                    },
+                  }"
+                  v-for="tag in data.tags"
+                  :key="tag"
+                  class="bg-slate-300 rounded-full px-3 py-1 text-sm mr-2 mb-2"
+                >
+                  {{ tag }}
+                </NuxtLink>
+              </div>
 
-            <div class="mt-3">
-              <h1 class="text-2xl font-bold">Source</h1>
-              {{ data.source }}
-              <a
-                v-if="data.imageSource"
-                :href="data.imageSource"
-                target="_blank"
-                >{{ data.imageSource }}</a
-              >
-            </div>
-            <div class="mt-3">
-              <h1 class="text-2xl font-bold">Resolution</h1>
-              {{ data.resolution }}
-            </div>
-            <div class="mt-3">
-              <h1 class="text-2xl font-bold">FileSize</h1>
-              {{ data.fileSize }}
+              <div class="mt-3">
+                <h1 class="text-2xl font-bold">Source</h1>
+                {{ data.source }}
+                <a
+                  v-if="data.imageSource"
+                  :href="data.imageSource"
+                  target="_blank"
+                  >{{ data.imageSource }}</a
+                >
+              </div>
+              <div class="mt-3">
+                <h1 class="text-2xl font-bold">Resolution</h1>
+                {{ data.resolution }}
+              </div>
+              <div class="mt-3">
+                <h1 class="text-2xl font-bold">FileSize</h1>
+                {{ data.fileSize }}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div v-else>
-    <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
-      <div>🤔</div>
-      <div>404</div>
+    <div v-else>
+      <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
+        <div>🤔</div>
+        <div>404</div>
+      </div>
     </div>
   </div>
 </template>
