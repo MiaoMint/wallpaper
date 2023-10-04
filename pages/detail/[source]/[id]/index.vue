@@ -148,6 +148,7 @@ onDeactivated(() => {
 });
 </script>
 <template>
+  <Meta name="og:image" :content="data?.sample" />
   <div class="h-screen" v-if="pending">
     <div class="h-3/4 flex flex-col justify-center items-center text-3xl">
       <div>🤔</div>

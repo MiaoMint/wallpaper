@@ -70,7 +70,7 @@ onUnmounted(() => {
       <NuxtLink :to="`/detail/${data.source}/${data.id}`">
         <div
           :class="[
-            'relative hover:-translate-y-3 shadow-xl transition-all rounded-2xl border w-full h-full md:h-[15vw] min-h-[100px] md:max-h-[180px] ',
+            'relative hover:-translate-y-3 shadow-xl transition-all rounded-2xl border w-full h-full md:h-[15vw] md:max-h-[180px]',
             {
               'overflow-hidden': !isHover,
             },
@@ -79,7 +79,7 @@ onUnmounted(() => {
           <LoadImage
             v-if="visible"
             ref="img"
-            class="w-full h-full flex justify-center items-center"
+            class="w-full h-full flex justify-center items-center min-h-[140px]"
             :src="data.sample"
             :alt="data.resolution"
           >
