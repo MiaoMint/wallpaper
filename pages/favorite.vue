@@ -60,6 +60,12 @@ const newSelecto = () => {
       }
     });
   });
+
+  selecto.on("dragEnd", (e) => {
+    if (e.isDrag) {
+      showDownloadDialog.value = true;
+    }
+  });
 };
 
 onActivated(() => {
