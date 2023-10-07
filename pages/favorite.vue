@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import GridList from "~/components/Layout/GridList.vue";
 import { ImageDetail } from "~/types/image";
-import { BlobWriter } from "@zip.js/zip.js";
+import Selecto from "selecto";
 
 const list = ref<ImageDetail[]>([]);
 const tags = ref<string[]>([]);
 const currentTag = ref<string | null>(null);
 const showDownloadDialog = ref(false);
+const target = ref<HTMLDivElement>();
+let selecto: Selecto | undefined;
+const selected = ref<ImageDetail[]>([]);
 
 // 过滤出当前选中的标签的图片
 const onFilteredImages = (tag: string) => {
@@ -25,10 +28,49 @@ const onFilteredImages = (tag: string) => {
   }
 };
 
+const newSelecto = () => {
+  selecto = new Selecto({
+    container: target.value,
+    selectableTargets: [".target > div"],
+    hitRate: 1,
+    selectByClick: false,
+    dragContainer: target.value,
+  });
+
+  console.log(selecto);
+
+  selecto.on("select", (e) => {
+    e.added.forEach((el) => {
+      el.classList.add("selected");
+      const input = el.querySelector("input");
+      if (input) {
+        selected.value.push(JSON.parse(input.value));
+      }
+    });
+    e.removed.forEach((el) => {
+      if (showDownloadDialog.value) {
+        return;
+      }
+      el.classList.remove("selected");
+      const input = el.querySelector("input");
+      if (input) {
+        selected.value = selected.value.filter(
+          (item) => item.id !== JSON.parse(input.value).id,
+        );
+      }
+    });
+  });
+};
+
 onActivated(() => {
   const images = getImages();
   list.value = [...images];
   tags.value = [...new Set(images.flatMap((image) => image.tags))];
+  newSelecto();
+});
+
+onDeactivated(() => {
+  selecto?.destroy();
 });
 </script>
 <template>
@@ -42,7 +84,7 @@ onActivated(() => {
         💾
       </button>
     </div>
-    <div class="mb-8">
+    <div>
       <div class="flex flex-wrap max-h-[200px] overflow-auto">
         <Tag
           v-for="tag in tags"
@@ -53,16 +95,23 @@ onActivated(() => {
         />
       </div>
     </div>
-    <div class="mb-8">
-      <GridList v-if="list.length" :data="list!" />
+    <div class="mb-8 pt-8" ref="target">
+      <GridList class="target" v-if="list.length" :data="list!" />
       <div v-else class="text-center mt-20 flex flex-col justify-center">
         <div class="text-2xl">No favorites yet</div>
         <div class="text-xl">Add some!</div>
       </div>
     </div>
     <DownloadDialog
+      :images="selected.length ? selected : list"
       v-if="showDownloadDialog"
       @close="showDownloadDialog = false"
     />
   </div>
 </template>
+
+<style>
+.selected {
+  filter: brightness(0.5);
+}
+</style>

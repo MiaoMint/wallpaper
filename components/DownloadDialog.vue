@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import { BlobReader, BlobWriter, ZipWriter } from "@zip.js/zip.js";
+import { ImageDetail } from "~/types/image";
+
+const { images } = defineProps({
+  images: {
+    type: Array<ImageDetail>,
+    required: true,
+  },
+});
 
 const emit = defineEmits(["close"]);
 const isDownloading = ref(false);
-const images = getImages();
 const progress = ref(0);
 const faileds = ref<string[]>([]);
 
@@ -56,7 +63,7 @@ const handelDownload = async () => {
       </div>
       <!-- 显示失败的图片 -->
       <div v-if="faileds.length" class="mb-3">
-        <div class="text-red-500 mb-2">Failed({{faileds.length}}):</div>
+        <div class="text-red-500 mb-2">Failed({{ faileds.length }}):</div>
         <div class="max-w-2xl max-h-52 overflow-auto">
           <div v-for="failed in faileds" :key="failed" class="break-words">
             {{ failed }}

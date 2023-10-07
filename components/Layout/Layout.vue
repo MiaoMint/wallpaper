@@ -25,10 +25,8 @@ const list = computed(() => {
 </script>
 
 <template>
-  <ImageCard
-    :class="props.itemClass"
-    v-for="image in list"
-    :key="image.id"
-    :data="image"
-  />
+  <div v-for="image in list" :key="image.id">
+    <ImageCard :class="props.itemClass" :data="image" />
+    <input type="text" :value="JSON.stringify(image)" hidden />
+  </div>
 </template>
